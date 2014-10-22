@@ -3,33 +3,31 @@ require 'zlib'
 require 'wlog/domain/sys_config'
 
 module Wlog
-# Following the Active Record pattern
-# OO way of handling blobs of data, to be stored in memory or in db.
-class Attachment < ActiveRecord::Base
-  before_save :compress_string
-  after_initialize :uncompress_string
-  belongs_to :attachable, polymorphic: true
+  # Following the Active Record pattern
+  # OO way of handling blobs of data, to be stored in memory or in db.
+  class Attachment < ActiveRecord::Base
+    before_save :compress_string
+    after_initialize :uncompress_string
+    belongs_to :attachable, polymorphic: true
 
-  def to_s
-    @strmaker = SysConfig.string_decorator
-    str = ''
-    str.concat("  [").concat(@strmaker.green(self.id)).concat("] ")
-    str.concat(@strmaker.red(self.filename)).concat($/)
-  str end
+    def to_s
+      @strmaker = SysConfig.string_decorator
+      str = ''
+      str.concat("  [").concat(@strmaker.green(self.id)).concat("] ")
+      str.concat(@strmaker.red(self.filename)).concat($/)
+    str end
 
-private
+    private
 
-  def compress_string
-    self.data = Zlib::Deflate.deflate self.data
-  end
+    def compress_string
+      self.data = Zlib::Deflate.deflate self.data
+    end
 
-  def uncompress_string
-    if self.data
-      # did we just init something with previous data? yes; we can uncompress
-      self.data = Zlib::Inflate.inflate self.data
+    def uncompress_string
+      if self.data
+        # did we just init something with previous data? yes; we can uncompress
+        self.data = Zlib::Inflate.inflate self.data
+      end
     end
   end
-
-end
 end # module Wlog
-

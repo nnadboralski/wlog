@@ -32,5 +32,4 @@ describe SysConfig do
     expect(@sys.last_focus).to eq("something_then")
   end
 
-
 end
